@@ -1,13 +1,16 @@
 from django.contrib import admin
 from django.urls import path
-from biblioteca.views import livros_biblioteca
+from biblioteca.views import BooksGetView
 from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView,)
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', TokenObtainPairView.as_view()),
-    path('refresh/', TokenRefreshView.as_view()),
-    path('livros/', livros_biblioteca, name='livros_biblioteca'),
+    path('books/', BooksGetView.as_view(), name='livros_biblioteca'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
 ]

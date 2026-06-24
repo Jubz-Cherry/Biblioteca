@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'biblioteca',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -83,11 +84,12 @@ DATABASES = {
 
  ## liberar quando o login estiver pronto
 
-##REST_FRAMEWORK = {
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 ##    'DEFAULT_AUTHENTICATION_CLASSES': (
 ##        'rest_framework_simplejwt.authentication.JWTAuthentication',
 ##   ),
-##}
+}
 
 
 # Password validation

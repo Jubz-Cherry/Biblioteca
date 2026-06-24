@@ -1,10 +1,34 @@
-from django.http import JsonResponse
+import os
+import requests
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-def livros_biblioteca(request):
-    if request.method == 'GET':
-        livros = [
-        {"id": 1, "titulo": "O Senhor dos Anéis", "autor": "J.R.R. Tolkien"},
-        {"id": 2, "titulo": "Harry Potter e a Pedra Filosofal", "autor": "J.K. Rowling"},
-        {"id": 3, "titulo": "1984", "autor": "George Orwell"},
-        ]
-    return JsonResponse(livros, safe=False)
+API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
+
+class BooksGetView(APIView):
+    def get(self, request):
+        category = request.query_params.get("category", "fiction")
+
+        url = (
+            f"https://www.googleapis.com/books/v1/volumes"
+            f"?q=subject:{category}&maxResults=20"
+            f"&key={API_KEY}"
+        )
+
+        response = requests.get(url)
+        data = response.json()
+
+        books = []
+
+        for item in data.get("items", []):
+            volume = item.get("volumeInfo", {})
+
+            books.append({
+                "title": volume.get("title"),
+                "authors": volume.get("authors", []),
+                "description": volume.get("description"),
+                "thumbnail": volume.get("imageLinks", {}).get("thumbnail"),
+                "categories": volume.get("categories", [])
+            })
+
+        return Response(books)
