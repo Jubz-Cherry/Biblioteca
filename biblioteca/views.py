@@ -1,13 +1,35 @@
 import os
+from dotenv import load_dotenv
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
+load_dotenv()
 
-class BooksGetView(APIView):
+API_KEY = os.getenv("GOOGLE_KEY")
+#print(f"API_KEY: {API_KEY}")  
+
+#sempre ativar para ver se está correta a ligração
+
+
+class BooksSearchView(APIView):
     def get(self, request):
-        category = request.query_params.get("category", "fiction")
+
+        CATEGORY_MAP = {
+        "ficcao": "fiction",
+        "romance": "romance",
+        "terror": "horror",
+        "fantasia": "fantasy",
+        "historia": "history",
+        "administracao": "business",
+        "culinaria": "cooking",
+        "ingles": "english language",
+        "autoajuda": "self-help",
+    }
+       
+        user_category = request.query_params.get("category", "ficcao")
+
+        category = CATEGORY_MAP.get(user_category, "fiction")
 
         url = (
             f"https://www.googleapis.com/books/v1/volumes"
@@ -17,7 +39,7 @@ class BooksGetView(APIView):
 
         response = requests.get(url)
         data = response.json()
-
+        
         books = []
 
         for item in data.get("items", []):
