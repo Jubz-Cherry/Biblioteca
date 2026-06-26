@@ -1,10 +1,13 @@
 import os
+from rest_framework import viewsets
 from dotenv import load_dotenv
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
+from biblioteca.models import RegisterBooks, Userlogin
+from biblioteca.serializers import RegisterBooksSerializer, UserloginSerializer
 
 load_dotenv()
 
@@ -49,6 +52,7 @@ class BooksSearchView(APIView):
         "ingles": "english",
         "autoajuda": "self-help",
     }
+    
        
         user_category = request.query_params.get("category", "")
 
@@ -92,3 +96,11 @@ class BooksSearchView(APIView):
             })
 
         return Response(books)
+    
+class UserloginView(viewsets.ModelViewSet):
+    queryset = Userlogin.objects.all()
+    serializer_class = UserloginSerializer
+
+class RegisterBooksView(viewsets.ModelViewSet):
+    queryset = RegisterBooks.objects.all()
+    serializer_class = RegisterBooksSerializer
