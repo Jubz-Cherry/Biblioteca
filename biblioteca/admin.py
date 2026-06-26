@@ -1,6 +1,7 @@
 from django.contrib import admin
 from biblioteca.models import User
 
+#face de admin do django
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'email', 'telephone')
