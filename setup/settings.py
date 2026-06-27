@@ -82,13 +82,14 @@ DATABASES = {
     }
 }
 
- ## liberar quando o login estiver pronto
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-##    'DEFAULT_AUTHENTICATION_CLASSES': (
-##        'rest_framework_simplejwt.authentication.JWTAuthentication',
-##   ),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
 }
 
 
@@ -110,6 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "biblioteca.Userlogin"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

@@ -1,13 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-class Userlogin(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+from biblioteca.serializers import CategorySerializer
+
+class Userlogin(AbstractUser):
     telephone = models.CharField(max_length=30)
 
     def __str__(self):
-        return f"{self.name} - {self.email}"
-    
+        return self.username
+
 
 class Author(models.Model):
     name = models.CharField(max_length=100)
@@ -27,7 +28,16 @@ class RegisterBooks(models.Model):
     title = models.CharField(max_length=255)
     authors = models.ManyToManyField(Author, related_name="books")
     description = models.TextField()
-    categories = models.ManyToManyField(Category, related_name="books")
+    category = CategorySerializer()
 
     def __str__(self):
         return self.title
+
+class Loanbook(models.Model):
+    user = models.ForeignKey(Userlogin, on_delete=models.CASCADE)
+    book = models.ForeignKey(RegisterBooks, on_delete=models.CASCADE)
+
+    borrowed_at = models.DateField(auto_now_add=True)
+    due_date = models.DateField()
+    returned_at = models.DateField(null=True, blank=True)
+        

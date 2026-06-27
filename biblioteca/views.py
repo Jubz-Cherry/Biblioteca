@@ -1,12 +1,13 @@
+from datetime import date, timedelta
 import os
 from rest_framework import viewsets
 from dotenv import load_dotenv
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, action
 
-from biblioteca.models import RegisterBooks, Userlogin
+from biblioteca.models import RegisterBooks, Userlogin, Loanbook
 from biblioteca.serializers import RegisterBooksSerializer, UserloginSerializer
 
 load_dotenv()
@@ -104,3 +105,63 @@ class UserloginView(viewsets.ModelViewSet):
 class RegisterBooksView(viewsets.ModelViewSet):
     queryset = RegisterBooks.objects.all()
     serializer_class = RegisterBooksSerializer
+
+    @action(detail=True, methods=["post"])
+    def borrow(self, request, pk=None):
+        Loanbook.objects.create(
+        user=request.user,
+        book=livro,
+        due_date=date.today() + timedelta(days=30)
+    )
+        livro = self.get_object()
+
+    # usuário já possui livro emprestado? 
+    # não poderá pegar outro até devolver o anterior.
+        if Loanbook.objects.filter(
+            user=requests.request.user,
+            returned_at__isnull=True
+            ).exists():
+                 return Response(
+                {"erro": "Você já possui um livro emprestado."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    def return_book(self, request, pk=None):
+        # usuario devolvendo o livro
+        livro = self.get_object()
+
+        try:
+            emprestimo = Loanbook.objects.get(
+                user=request.user,
+                book=livro,
+                returned_at__isnull=True
+            )
+
+        except Loanbook.DoesNotExist:
+            return Response(
+                {"erro": "Você não possui este livro emprestado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        emprestimo.returned_at = date.today()
+        emprestimo.save()
+
+        return Response(
+            {"mensagem": "Livro devolvido com sucesso."},
+            status=status.HTTP_200_OK
+        )
+    
+        # ATIVAR QUANDO O CÓDIGO ESTIVER "PRONTO"
+        #pois envolve lógia da lista de espera e envio de email/notificações ao usuário
+
+            # Livro já está emprestado?
+ #       if Loanbook.objects.filter(
+ #           book=livro,
+ #           returned_at__isnull=True
+ #       ).exists():
+ #           return Response(
+ #               {"erro": "Este livro já está emprestado."},
+ #               status=status.HTTP_400_BAD_REQUEST
+ #           )
+
+            
+    
