@@ -1,38 +1,73 @@
 from django.contrib import admin
-from biblioteca.models import Author, Category, RegisterBooks, Userlogin
+from biblioteca.models import (Author,Category,RegisterBooks,Userlogin,Loanbook,)
 
-#face de admin do django
 
+# Usuários
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'email', 'telephone')
-    list_display_links = ('id', 'name')
+    list_display = ("id", "username", "email", "telephone")
+    list_display_links = ("id", "username")
+    search_fields = ("username", "telephone")
     list_per_page = 20
-    search_fields = ('name', 'telephone')
 
 
 admin.site.register(Userlogin, UserAdmin)
 
+
+# Autores
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    list_display_links = ('id', 'name')
+    list_display = ("id", "name")
+    list_display_links = ("id", "name")
+    search_fields = ("name",)
     list_per_page = 20
-    search_fields = ('name',)
+
 
 admin.site.register(Author, AuthorAdmin)
 
+
+# Categorias
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    list_display_links = ('id', 'name')
+    list_display = ("id", "name")
+    list_display_links = ("id", "name")
+    search_fields = ("name",)
     list_per_page = 20
-    search_fields = ('name',)
+
 
 admin.site.register(Category, CategoryAdmin)
 
+
+# Livros
 class RegisterBooksAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description')
-    list_display_links = ('id', 'title')
+    list_display = ("id", "title", "description", "category")
+    list_display_links = ("id", "title")
+    search_fields = ("title", "description")
+    list_filter = ("category",)
+    filter_horizontal = ("authors",)
     list_per_page = 20
-    search_fields = ('title', 'description')
-    filter_horizontal = ('authors', 'categories')
+
 
 admin.site.register(RegisterBooks, RegisterBooksAdmin)
+
+
+# Empréstimos
+class LoanbookAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "book",
+        "borrowed_at",
+        "due_date",
+        "returned_at",
+    )
+    list_display_links = ("id", "user")
+    search_fields = (
+        "user__username",
+        "book__title",
+    )
+    list_filter = (
+        "borrowed_at",
+        "returned_at",
+    )
+    list_per_page = 20
+
+
+admin.site.register(Loanbook, LoanbookAdmin)
